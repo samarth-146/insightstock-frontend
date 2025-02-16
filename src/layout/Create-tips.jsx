@@ -1,27 +1,148 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function CreateTip() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     stockName: "",
     date: "",
     description: "",
     predictedPrice: "",
-  })
+    exclusive: false,
+  });
+
+  const [stockList, setStockList] = useState([]);
+  const [filteredStocks, setFilteredStocks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isMonetized, setIsMonetized] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+
+  useEffect(() => {
+    async function fetchStocks() {
+      try {
+        const response = await axios.get("http://localhost:8080/stocks");
+        setStockList(response.data);
+        setFilteredStocks(response.data);
+      } catch (error) {
+        console.error("Error fetching stocks:", error);
+      }
+    }
+
+    async function checkUserMembership() {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/users/${userId}`
+        );
+        if (response.data && response.data.membership) {
+          setIsMonetized(true);
+        }
+      } catch (error) {
+        console.error("Error fetching user membership:", error);
+      }
+    }
+
+    fetchStocks();
+    checkUserMembership();
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Here you would typically send the data to your API
-    console.log("Form submitted:", formData)
-    // Redirect to home page after submission
-    navigate("/")
-  }
+  const handleStockSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    setShowDropdown(true);
+
+    if (query === "") {
+      setFilteredStocks(stockList);
+    } else {
+      setFilteredStocks(
+        stockList.filter((stock) =>
+          stock.stockName.toLowerCase().includes(query)
+        )
+      );
+    }
+
+    setHighlightedIndex(0); // Reset selection when typing
+  };
+
+  const handleStockSelect = (stockName) => {
+    setFormData((prev) => ({ ...prev, stockName }));
+    setSearchQuery(stockName);
+    setShowDropdown(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showDropdown || filteredStocks.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < filteredStocks.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev > 0 ? prev - 1 : filteredStocks.length - 1
+      );
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      handleStockSelect(filteredStocks[highlightedIndex].stockName);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Ensure date is in the future
+    const selectedDate = new Date(formData.date);
+    const today = new Date();
+    if (selectedDate < today.setHours(0, 0, 0, 0)) {
+      alert("Please select a future date.");
+      return;
+    }
+
+    // Validate price as a number
+    const price = parseFloat(formData.predictedPrice);
+    if (isNaN(price) || price <= 0) {
+      alert("Please enter a valid number for the predicted price.");
+      return;
+    }
+
+    const tipData = {
+      stock_name: formData.stockName,
+      predicted_price: price,
+      reason: formData.description,
+      stock_score: 0,
+      predicted_on: formData.date,
+      exclusive: formData.exclusive,
+    };
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("User is not authenticated.");
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:8080/tips", tipData, {
+        headers: { Authorization: `Bearer ${token}` }, // Corrected
+      });
+      navigate("/");
+    } catch (error) {
+      console.error("Error submitting tip:", error);
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -31,40 +152,67 @@ export default function CreateTip() {
         </div>
         <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
           <div className="space-y-6">
+            {/* Stock Name Searchable Dropdown */}
             <div>
-              <label htmlFor="stockName" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
                 Stock Name
               </label>
               <input
                 type="text"
-                id="stockName"
-                name="stockName"
-                value={formData.stockName}
-                onChange={handleChange}
-                required
+                value={searchQuery}
+                onChange={handleStockSearch}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setShowDropdown(true)}
+                placeholder="Search stock..."
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
+              {showDropdown && filteredStocks.length > 0 && (
+                <ul className="border border-gray-300 mt-1 max-h-40 overflow-auto bg-white rounded-md shadow-lg">
+                  {filteredStocks.map((stock, index) => (
+                    <li
+                      key={stock.id}
+                      onClick={() => handleStockSelect(stock.stockName)}
+                      className={`px-3 py-2 cursor-pointer ${
+                        highlightedIndex === index
+                          ? "bg-blue-100"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {stock.stockName}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <input
+                type="hidden"
+                name="stockName"
+                value={formData.stockName}
+              />
             </div>
+
+            {/* Future Date Selection */}
             <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
                 Date
               </label>
               <input
                 type="date"
-                id="date"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
+                onClick={(e) => e.target.showPicker && e.target.showPicker()} // Open calendar on click
                 required
+                min={new Date().toISOString().split("T")[0]}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
+
+            {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
                 Description
               </label>
               <textarea
-                id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
@@ -73,33 +221,40 @@ export default function CreateTip() {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
+
+            {/* Predicted Price */}
             <div>
-              <label htmlFor="predictedPrice" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
                 Predicted Price
               </label>
               <input
                 type="number"
                 step="0.01"
-                id="predictedPrice"
                 name="predictedPrice"
                 value={formData.predictedPrice}
                 onChange={handleChange}
+                onInput={(e) => {
+                  if (!/^\d*\.?\d*$/.test(e.target.value)) {
+                    e.target.value = e.target.value.slice(0, -1);
+                  }
+                }}
                 required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
-          </div>
-          <div className="mt-6">
-            <button
-              type="submit"
-              className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Create Tip
-            </button>
+
+            {/* Submit Button */}
+            <div className="mt-6">
+              <button
+                type="submit"
+                className="w-full py-2 px-4 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
+              >
+                Create Tip
+              </button>
+            </div>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
-

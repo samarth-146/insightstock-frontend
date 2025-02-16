@@ -1,91 +1,97 @@
-import React, { useState, useEffect } from "react"
-import TipsList from "../components/TipsList"
-import TopStocksWidget from "../components/TopStocksWidgets"
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../authContext";
+import TipsList from "../components/TipsList";
+import TopStocksWidget from "../components/TopStocksWidgets";
 
 export default function Home() {
-  const [tips, setTips] = useState([])
-  const [topStocks, setTopStocks] = useState([])
+  const [tips, setTips] = useState([]);
+  const [topStocks, setTopStocks] = useState([]);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    // Fetch tips
     const fetchTips = async () => {
-      // Simulating API delay
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      setTips([
-        {
-          id: 1,
-          userName: "JohnDoe",
-          stockName: "AAPL",
-          description: "Apple's new product launch could boost stock price",
-          predictedPrice: 150.75,
-          predictedModelPrice: 149.5,
-          date: "2023-05-15",
-        },
-        {
-          id: 2,
-          userName: "JaneSmith",
-          stockName: "GOOGL",
-          description: "Google's AI advancements may lead to increased revenue",
-          predictedPrice: 2800.5,
-          predictedModelPrice: 2795.25,
-          date: "2023-05-14",
-        },
-        {
-          id: 3,
-          userName: "MikeJohnson",
-          stockName: "TSLA",
-          description: "Tesla's new factory opening might improve production rates",
-          predictedPrice: 900.25,
-          predictedModelPrice: 905.75,
-          date: "2023-05-13",
-        },
-        {
-          id: 4,
-          userName: "EmilyBrown",
-          stockName: "AMZN",
-          description: "Amazon's expansion into healthcare could be a game-changer",
-          predictedPrice: 3500.0,
-          predictedModelPrice: 3489.5,
-          date: "2023-05-12",
-        },
-        {
-          id: 5,
-          userName: "DavidWilson",
-          stockName: "MSFT",
-          description: "Microsoft's cloud services growth may exceed expectations",
-          predictedPrice: 300.75,
-          predictedModelPrice: 298.25,
-          date: "2023-05-11",
-        },
-      ])
-    }
+      if (!currentUser) return;
 
-    // Fetch top stocks
+      try {
+        // Fetch subscriptions and memberships
+        const subscriptionsRes = await fetch(
+          `http://localhost:8080/users/${currentUser}/subscriptions`
+        );
+        const membershipsRes = await fetch(
+          `http://localhost:8080/users/${currentUser}/memberships`
+        );
+
+        const subscriptions = await subscriptionsRes.json();
+        const memberships = await membershipsRes.json();
+
+        // Combine user IDs from both lists
+        const userIds = new Set([...subscriptions, ...memberships]);
+        
+        let allTips = [];
+        for (const userId of userIds) {
+          const tipsRes = await fetch(
+            `http://localhost:8080/users/${userId}/tips`
+          );
+          const userTips = await tipsRes.json();
+          
+          allTips = [...allTips, ...userTips];
+        }
+
+        // Sort tips by created_on (newest first)
+        allTips.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
+
+        setTips(allTips);
+      } catch (error) {
+        console.error("Error fetching tips:", error);
+      }
+    };
+
+    fetchTips();
+  }, [currentUser]);
+
+  useEffect(() => {
     const fetchTopStocks = async () => {
-      // Simulating API delay
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500));
       setTopStocks([
-        { symbol: "RELIANCE", name: "Reliance Industries", lastClosedPrice: 2500.75 },
-        { symbol: "TCS", name: "Tata Consultancy Services", lastClosedPrice: 3200.5 },
+        {
+          symbol: "RELIANCE",
+          name: "Reliance Industries",
+          lastClosedPrice: 2500.75,
+        },
+        {
+          symbol: "TCS",
+          name: "Tata Consultancy Services",
+          lastClosedPrice: 3200.5,
+        },
         { symbol: "HDFCBANK", name: "HDFC Bank", lastClosedPrice: 1450.25 },
         { symbol: "INFY", name: "Infosys", lastClosedPrice: 1300.0 },
-        { symbol: "HINDUNILVR", name: "Hindustan Unilever", lastClosedPrice: 2600.75 },
+        {
+          symbol: "HINDUNILVR",
+          name: "Hindustan Unilever",
+          lastClosedPrice: 2600.75,
+        },
         { symbol: "ICICIBANK", name: "ICICI Bank", lastClosedPrice: 750.5 },
-        { symbol: "SBIN", name: "State Bank of India", lastClosedPrice: 450.25 },
+        {
+          symbol: "SBIN",
+          name: "State Bank of India",
+          lastClosedPrice: 450.25,
+        },
         { symbol: "BHARTIARTL", name: "Bharti Airtel", lastClosedPrice: 600.0 },
         { symbol: "ITC", name: "ITC", lastClosedPrice: 275.5 },
-        { symbol: "KOTAKBANK", name: "Kotak Mahindra Bank", lastClosedPrice: 1800.25 },
-      ])
-    }
+        {
+          symbol: "KOTAKBANK",
+          name: "Kotak Mahindra Bank",
+          lastClosedPrice: 1800.25,
+        },
+      ]);
+    };
 
-    fetchTips()
-    fetchTopStocks()
-  }, [])
+    fetchTopStocks();
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
-
-      {/* Second column: Scrollable list of tips with search bar */}
+      {/* Second column: Scrollable list of tips */}
       <div className="w-4/6 p-4 overflow-y-auto">
         <TipsList tips={tips} />
       </div>
@@ -97,6 +103,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
