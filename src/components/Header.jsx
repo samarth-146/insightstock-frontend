@@ -10,7 +10,7 @@ function Header({ isSignIn }) {
             null
           ) : <ul>
           <li>
-            <a href="#" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            <a href="/login" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
               Sign In
             </a>
           </li>
