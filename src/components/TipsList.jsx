@@ -1,4 +1,5 @@
-import { useState } from "react"
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
 
 export default function TipsList({ tips }) {
   const [searchTerm, setSearchTerm] = useState("")
@@ -28,7 +29,12 @@ export default function TipsList({ tips }) {
               </div>
             </div>
             <div className="px-4 py-3">
-              <p className="text-sm text-gray-600 mb-2">by {tip.userName}</p>
+              <p className="text-sm text-gray-600 mb-2">
+                by{" "}
+                <Link to={`/user/${tip.userName}`} className="text-blue-600 hover:underline">
+                  {tip.userName}
+                </Link>
+              </p>
               <p className="text-gray-700 mb-4">{tip.description}</p>
               <div className="flex justify-between">
                 <p className="text-blue-600 font-semibold">Predicted: ${tip.predictedPrice.toFixed(2)}</p>

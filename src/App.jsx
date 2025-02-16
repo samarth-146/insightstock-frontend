@@ -8,6 +8,7 @@ import CreateTip from "./layout/Create-tips";
 import Subscriptions from "./layout/Subscriptions";
 import Profile from "./layout/Profile";
 import Layout from "./layout/Layout";
+import UserProfile from "./layout/UserProfile";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/create-tip" element={<CreateTip />} />
           <Route path="/subscriptions" element={<Subscriptions />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/user/:username" element={<UserProfile />} />
         </Route>
       </Routes>
     </Router>
