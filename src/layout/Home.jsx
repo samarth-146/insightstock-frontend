@@ -28,14 +28,12 @@ export default function Home() {
         const userIds = new Set([...subscriptions, ...memberships]);
         
         let allTips = [];
-        for (const userId of userIds) {
-          const tipsRes = await fetch(
-            `http://localhost:8080/users/${userId}/tips`
-          );
-          const userTips = await tipsRes.json();
-          
-          allTips = [...allTips, ...userTips];
-        }
+        const tipsRes = await fetch(
+            `http://localhost:8080/tips`
+        );
+        const userTips = await tipsRes.json();
+        
+        allTips = [...allTips, ...userTips];
 
         // Sort tips by created_on (newest first)
         allTips.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-export default function TipsList({ tips, baseUrl }) {
+export default function TipsList({ tips }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [usernames, setUsernames] = useState({});
-
+  console.log(tips);
   useEffect(() => {
     const fetchUsernames = async () => {
       const newUsernames = {};
@@ -22,8 +22,8 @@ export default function TipsList({ tips, baseUrl }) {
     };
 
     fetchUsernames();
-  }, [tips, baseUrl]);
-
+  }, [tips]);
+  console.log(tips)
   const filteredTips = tips.filter((tip) =>
     tip.stock_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
