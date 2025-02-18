@@ -14,18 +14,18 @@ export default function Home() {
 
       try {
         // Fetch subscriptions and memberships
-        const subscriptionsRes = await fetch(
-          `http://localhost:8080/users/${currentUser}/subscriptions`
-        );
-        const membershipsRes = await fetch(
-          `http://localhost:8080/users/${currentUser}/memberships`
-        );
+        // const subscriptionsRes = await fetch(
+        //   `http://localhost:8080/users/${currentUser}/subscriptions`
+        // );
+        // const membershipsRes = await fetch(
+        //   `http://localhost:8080/users/${currentUser}/memberships`
+        // );
 
-        const subscriptions = await subscriptionsRes.json();
-        const memberships = await membershipsRes.json();
+        // const subscriptions = await subscriptionsRes.json();
+        // const memberships = await membershipsRes.json();
 
-        // Combine user IDs from both lists
-        const userIds = new Set([...subscriptions, ...memberships]);
+        // // Combine user IDs from both lists
+        // const userIds = new Set([...subscriptions, ...memberships]);
         
         let allTips = [];
         const tipsRes = await fetch(
