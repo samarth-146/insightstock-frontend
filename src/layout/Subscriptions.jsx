@@ -5,14 +5,14 @@ export default function Subscriptions() {
     {
       id: 1,
       name: "Alice Johnson",
-      avatar: "/placeholder.svg?height=40&width=40",
+      email:"abc@gmail.com",
       tipCount: 15,
-      recentPerformance: 8.5,
       topStocks: ["AAPL", "GOOGL", "MSFT"],
     },
     {
       id: 2,
       name: "Bob Smith",
+      email:"abc@gmail.com",
       avatar: "/placeholder.svg?height=40&width=40",
       tipCount: 23,
       recentPerformance: -2.1,
@@ -21,6 +21,7 @@ export default function Subscriptions() {
     {
       id: 3,
       name: "Charlie Brown",
+      email:"abc@gmail.com",
       avatar: "/placeholder.svg?height=40&width=40",
       tipCount: 7,
       recentPerformance: 12.3,
@@ -29,6 +30,7 @@ export default function Subscriptions() {
     {
       id: 4,
       name: "Diana Ross",
+      email:"abc@gmail.com",
       avatar: "/placeholder.svg?height=40&width=40",
       tipCount: 31,
       recentPerformance: 5.7,
@@ -37,6 +39,7 @@ export default function Subscriptions() {
     {
       id: 5,
       name: "Ethan Hunt",
+      email:"abc@gmail.com",
       avatar: "/placeholder.svg?height=40&width=40",
       tipCount: 19,
       recentPerformance: -1.8,
@@ -55,9 +58,6 @@ export default function Subscriptions() {
           >
             <div className="px-4 py-5 sm:px-6">
               <div className="flex items-center space-x-4">
-                {/* <div className="flex-shrink-0">
-                  <img className="h-12 w-12 rounded-full" src={sub.avatar || "/placeholder.svg"} alt={sub.name} />
-                </div> */}
                 <div>
                   <h2 className="text-xl font-semibold">{sub.name}</h2>
                   <p className="text-sm text-gray-500">{sub.tipCount} tips</p>
@@ -65,33 +65,7 @@ export default function Subscriptions() {
               </div>
             </div>
             <div className="px-4 py-5 sm:p-6">
-              <div className="mb-4">
-                <h3 className="font-semibold mb-2">Recent Performance</h3>
-                <div className="flex space-x-2">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      sub.recentPerformance >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {sub.recentPerformance >= 0 ? "+" : ""}
-                    {sub.recentPerformance}%
-                  </span>
-                  <span className="text-sm text-gray-500">Last 30 days</span>
-                </div>
-              </div>
-              <div className="mb-4">
-                <h3 className="font-semibold mb-2">Top Stocks</h3>
-                <div className="flex flex-wrap gap-2">
-                  {sub.topStocks.map((stock, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                    >
-                      {stock}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              {/* <h3 className="text-lg font-semibold mb-2">{sub.email}</h3> */}
               <button className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                 Unsubscribe
               </button>

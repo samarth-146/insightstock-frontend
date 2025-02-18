@@ -138,7 +138,7 @@ export default function CreateTip() {
       await axios.post("http://localhost:8080/tips", tipData, {
         headers: { Authorization: `Bearer ${token}` }, // Corrected
       });
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       console.error("Error submitting tip:", error);
     }
