@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Import Link for navigation
 
 export default function TipsList({ tips }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [usernames, setUsernames] = useState({});
-  console.log(tips);
+
   useEffect(() => {
     const fetchUsernames = async () => {
       const newUsernames = {};
       for (const tip of tips) {
-        if (!tip.user) continue; // Ensure user id exists in tip data
+        if (!tip.user) continue;
         try {
           const response = await fetch(`http://localhost:8080/users/${tip.user}`);
           const data = await response.json();
@@ -23,7 +24,7 @@ export default function TipsList({ tips }) {
 
     fetchUsernames();
   }, [tips]);
-  console.log(tips)
+
   const filteredTips = tips.filter((tip) =>
     tip.stock_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -49,7 +50,10 @@ export default function TipsList({ tips }) {
             <div className="px-4 py-3">
               <p className="text-gray-700 mb-2">{tip.reason}</p>
               <p className="text-sm text-gray-600 mb-2">
-                By: <span className="font-semibold">{usernames[tip.user] || "Loading..."}</span>
+                By: 
+                <Link to={`/profile/${tip.user}`} className="text-blue-600 font-semibold hover:underline">
+                  {usernames[tip.user] || "Loading..."}
+                </Link>
               </p>
               <div className="flex justify-between">
                 <p className="text-blue-600 font-semibold">

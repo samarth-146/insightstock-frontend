@@ -11,6 +11,7 @@ import Subscriptions from './layout/Subscriptions';
 import Profile from './layout/Profile';
 import UserProfile from './layout/UserProfile';
 
+
 const ProjectRouter=()=>{
     const navigate=useNavigate();
     const {currentUser,setCurrentUser}=useAuth();
@@ -47,7 +48,8 @@ const ProjectRouter=()=>{
                 { path: "/create-tip", element: <CreateTip/> },
                 { path: "/subscriptions", element: <Subscriptions/> },
                 { path: "/profile", element: <Profile/> },
-                { path: "/user/:username", element: <UserProfile/> }
+                { path: "/user/:username", element: <UserProfile/> },
+                {path:"/profile/:userId",element:<UserProfile/>}
             ],
 
         },
