@@ -21,7 +21,7 @@ export default function Profile() {
         username: data.username,
         email: data.email,
         bio: data.bio || "No bio provided",
-        subscribersCount: data.subscriptionList.length,
+        subscribersCount: data.subscription ? data.subscription.subscribers.length : 0,
         monetized: data.monetized,
         membersCount: data.membershipsList.length,
         membershipPrice: data.membership ? data.membership.price : 0,
@@ -172,7 +172,7 @@ export default function Profile() {
           <h2 className="text-xl font-bold text-gray-900">My Tips</h2>
         </div>
         <div className="border-t border-gray-200">
-          <TipsList tips={userTips} />
+          <TipsList tips={userTips} flag={false} />
         </div>
       </div>
     </div>

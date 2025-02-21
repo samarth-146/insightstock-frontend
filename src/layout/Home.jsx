@@ -21,7 +21,9 @@ export default function Home() {
         const userTips = await tipsRes.json();
         
         allTips = [...allTips, ...userTips];
-
+        console.log(allTips);
+        let currentUser = localStorage.getItem("userId");
+        allTips = allTips.filter((tip) => tip.user !== currentUser);
         // Sort tips by created_on (newest first)
         allTips.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
 
