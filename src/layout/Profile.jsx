@@ -18,11 +18,11 @@ export default function Profile() {
       const response = await fetch(`http://localhost:8080/users/${userId}`) // replace {userId} with the actual user ID
       const data = await response.json()
       setProfile({
-        name: data.username,
+        username: data.username,
         email: data.email,
         bio: data.bio || "No bio provided",
         subscribersCount: data.subscriptionList.length,
-        isMonetized: data.monetized,
+        monetized: data.monetized,
         membersCount: data.membershipsList.length,
         membershipPrice: data.membership ? data.membership.price : 0,
       })
@@ -44,11 +44,48 @@ export default function Profile() {
   }
 
   const handleProfileUpdate = (updatedProfile) => {
-    setProfile(updatedProfile)
-    setIsEditing(false)
-    // Here you would typically make an API call to update the profile
     console.log("Profile updated:", updatedProfile)
+    setIsEditing(false)
+    
+    let userId = localStorage.getItem("userId")
+    
+    const requestBody = {}
+    if (updatedProfile.username) requestBody.username = updatedProfile.username
+    if (updatedProfile.bio) requestBody.bio = updatedProfile.bio
+    if (updatedProfile.subscribersCount>=1000){
+      if (updatedProfile.monetized !== undefined) requestBody.monetized = updatedProfile.monetized
+      if (updatedProfile.monetized) {
+        if (updatedProfile.membershipPrice) requestBody.membership = {
+          price: updatedProfile.membershipPrice
+        }
+      }
+    }
+    console.log("Request body:", requestBody)
+    fetch(`http://localhost:8080/users/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify(requestBody)
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok")
+      }
+      return response.json()
+    })
+    .then((data) => {
+      console.log("API Success:", data)
+      fetchProfile()
+      setProfile(updatedProfile)
+      })
+      .catch((error) => {
+        console.error("API Error:", error)
+        fetchProfile()
+      })
   }
+  
 
   if (!profile) {
     return <div>Loading...</div>
@@ -73,7 +110,7 @@ export default function Profile() {
             <dl className="sm:divide-y sm:divide-gray-200">
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Name</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{profile.name}</dd>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{profile.username}</dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Email</dt>
@@ -89,7 +126,7 @@ export default function Profile() {
                   {profile.subscribersCount}
                 </dd>
               </div>
-              {profile.subscribersCount >= 1000 && !profile.isMonetized && (
+              {profile.subscribersCount >= 1000 && !profile.monetized && (
                 <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium text-gray-500">Monetization</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -97,7 +134,7 @@ export default function Profile() {
                       onClick={() => {
                         // Here you would typically make an API call to enable monetization
                         console.log("Monetize profile")
-                        setProfile({ ...profile, isMonetized: true })
+                        setProfile({ ...profile, monetized: true })
                       }}
                       className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                     >
@@ -106,7 +143,7 @@ export default function Profile() {
                   </dd>
                 </div>
               )}
-              {profile.isMonetized && (
+              {profile.monetized && (
                 <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium text-gray-500">Members</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -117,7 +154,7 @@ export default function Profile() {
                   </dd>
                 </div>
               )}
-              {profile.isMonetized && (
+              {profile.monetized && (
                 <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium text-gray-500">Membership Price</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">

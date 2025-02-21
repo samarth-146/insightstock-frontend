@@ -7,7 +7,6 @@ import Signup from './layout/Signup';
 import Home from './layout/Home';
 import Layout from './layout/Layout';
 import CreateTip from './layout/Create-tips';
-import Subscriptions from './layout/Subscriptions';
 import Profile from './layout/Profile';
 import UserProfile from './layout/UserProfile';
 
@@ -46,7 +45,6 @@ const ProjectRouter=()=>{
             children:[
                 {path:"/home",element:<Home/>},
                 { path: "/create-tip", element: <CreateTip/> },
-                { path: "/subscriptions", element: <Subscriptions/> },
                 { path: "/profile", element: <Profile/> },
                 { path: "/user/:username", element: <UserProfile/> },
                 {path:"/profile/:userId",element:<UserProfile/>}

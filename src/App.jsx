@@ -5,7 +5,6 @@ import Signup from "./layout/Signup";
 import Login from "./layout/Login";
 import Home from "./layout/Home";
 import CreateTip from "./layout/Create-tips";
-import Subscriptions from "./layout/Subscriptions";
 import Profile from "./layout/Profile";
 import Layout from "./layout/Layout";
 import UserProfile from "./layout/UserProfile";
