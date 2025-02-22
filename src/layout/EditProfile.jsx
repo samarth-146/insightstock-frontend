@@ -47,9 +47,9 @@ export default function EditProfile({ profile, onSave, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    console.log("Form submitted", formData)
     if (validateForm()) {
       onSave({
-        ...profile,
         ...formData,
         membershipPrice: Number.parseFloat(formData.membershipPrice),
       })
@@ -93,7 +93,7 @@ export default function EditProfile({ profile, onSave, onCancel }) {
             {errors.bio && <p className="mt-2 text-sm text-red-600">{errors.bio}</p>}
           </div>
 
-          {profile.subscribersCount >= 1000 && (
+          {/* {profile.subscribersCount >= 1000 && ( */}
             <div className="col-span-6">
               <div className="flex items-start">
                 <div className="flex items-center h-5">
@@ -114,12 +114,12 @@ export default function EditProfile({ profile, onSave, onCancel }) {
                 </div>
               </div>
             </div>
-          )}
+           {/* )} */}
 
           {formData.monetized && (
             <div className="col-span-6 sm:col-span-3">
               <label htmlFor="membershipPrice" className="block text-sm font-medium text-gray-700">
-                Membership Price ($ / month)
+                Membership Price (Rs / month)
               </label>
               <input
                 type="number"

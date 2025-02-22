@@ -8,6 +8,7 @@ export default function UserProfile() {
   const [userTips, setUserTips] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [isMember, setIsMember] = useState(false)
 
   useEffect(() => {
     // Fetch current user info
@@ -17,7 +18,7 @@ export default function UserProfile() {
         const response = await fetch(`http://localhost:8080/users/${userId1}`)
         const data = await response.json()
         setCurrentUser(data)
-        // console.log("Current User:", data)
+        console.log("Current User:", data)
       } catch (error) {
         console.error("Error fetching current user:", error)
       }
@@ -27,6 +28,7 @@ export default function UserProfile() {
       try {
         const response = await fetch(`http://localhost:8080/users/${userId}`)
         const data = await response.json()
+        console.log("User Profile:", data)
         setUserProfile(data)
       } catch (error) {
         console.error("Error fetching user profile:", error)
@@ -52,6 +54,11 @@ export default function UserProfile() {
   useEffect(() => {
     if (userProfile && currentUser && userProfile.subscription) {
       setIsSubscribed(userProfile.subscription.subscribers.includes(currentUser.id))
+    }
+    if (userProfile && currentUser && userProfile.membership) {
+      setIsMember(userProfile.membership.members.some(
+        (member) => member.user === currentUser.id
+      ))
     }
   }, [userProfile, currentUser])
 
@@ -80,9 +87,31 @@ export default function UserProfile() {
   }
 
   // Handle join membership action
-  const handleJoin = () => {
-    alert("Join Membership - Coming Soon!")
+  const handleJoin = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/membership/register/${userProfile.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+
+      if (response.ok) {
+        alert("Successfully joined membership!")
+        setIsSubscribed(true)
+        window.location.reload()
+      } else {
+        const errorData = await response.json()
+        console.error("Error joining membership:", errorData)
+        alert("Failed to join membership. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error joining membership:", error)
+      alert("An error occurred. Please try again.")
+    }
   }
+
 
   if (!userProfile) {
     return <div className="text-center mt-8">Loading...</div>
@@ -126,7 +155,7 @@ export default function UserProfile() {
       )}
 
       {/* Join Button for Membership */}
-      {userProfile.monetized && (
+      {userProfile.monetized && !isMember &&(
         <button
           onClick={handleJoin}
           className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 ml-4"

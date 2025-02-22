@@ -9,6 +9,7 @@ import Layout from './layout/Layout';
 import CreateTip from './layout/Create-tips';
 import Profile from './layout/Profile';
 import UserProfile from './layout/UserProfile';
+import ExclusiveTipsPage from './layout/ExclusiveTIps';
 
 
 const ProjectRouter=()=>{
@@ -47,7 +48,8 @@ const ProjectRouter=()=>{
                 { path: "/create-tip", element: <CreateTip/> },
                 { path: "/profile", element: <Profile/> },
                 { path: "/user/:username", element: <UserProfile/> },
-                {path:"/profile/:userId",element:<UserProfile/>}
+                {path:"/profile/:userId",element:<UserProfile/>},
+                {path: "/exclusive", element: <ExclusiveTipsPage />},
             ],
 
         },

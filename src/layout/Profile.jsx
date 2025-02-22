@@ -23,7 +23,7 @@ export default function Profile() {
         bio: data.bio || "No bio provided",
         subscribersCount: data.subscription ? data.subscription.subscribers.length : 0,
         monetized: data.monetized,
-        membersCount: data.membershipsList.length,
+        membersCount: data.membership ? data.membership.members.length : 0,
         membershipPrice: data.membership ? data.membership.price : 0,
       })
     } catch (error) {
@@ -52,8 +52,8 @@ export default function Profile() {
     const requestBody = {}
     if (updatedProfile.username) requestBody.username = updatedProfile.username
     if (updatedProfile.bio) requestBody.bio = updatedProfile.bio
-    if (updatedProfile.subscribersCount>=1000){
-      if (updatedProfile.monetized !== undefined) requestBody.monetized = updatedProfile.monetized
+    if (profile.subscribersCount>=1000 && updatedProfile.monetized != undefined) {
+      requestBody.monetized = updatedProfile.monetized
       if (updatedProfile.monetized) {
         if (updatedProfile.membershipPrice) requestBody.membership = {
           price: updatedProfile.membershipPrice
@@ -131,11 +131,7 @@ export default function Profile() {
                   <dt className="text-sm font-medium text-gray-500">Monetization</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     <button
-                      onClick={() => {
-                        // Here you would typically make an API call to enable monetization
-                        console.log("Monetize profile")
-                        setProfile({ ...profile, monetized: true })
-                      }}
+                      onClick={() => setIsEditing(true)}
                       className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                     >
                       Monetize Profile
@@ -148,9 +144,6 @@ export default function Profile() {
                   <dt className="text-sm font-medium text-gray-500">Members</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     {profile.membersCount}
-                    <button className="ml-4 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                      View Members
-                    </button>
                   </dd>
                 </div>
               )}

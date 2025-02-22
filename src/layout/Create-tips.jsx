@@ -40,6 +40,8 @@ export default function CreateTip() {
         );
         if (response.data && response.data.membership) {
           setIsMonetized(true);
+        } else {
+          console.log("User is not monetized");
         }
       } catch (error) {
         console.error("Error fetching user membership:", error);
@@ -73,7 +75,7 @@ export default function CreateTip() {
       );
     }
 
-    setHighlightedIndex(0); // Reset selection when typing
+    setHighlightedIndex(0);
   };
 
   const handleStockSelect = (stockName) => {
@@ -100,11 +102,17 @@ export default function CreateTip() {
       handleStockSelect(filteredStocks[highlightedIndex].stockName);
     }
   };
+  const handleExclusiveSubmit = () => {
+    setFormData((prev) => ({
+      ...prev,
+      exclusive: true, // Set exclusive to true
+    }));
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Ensure date is in the future
     const selectedDate = new Date(formData.date);
     const today = new Date();
     if (selectedDate < today.setHours(0, 0, 0, 0)) {
@@ -112,7 +120,6 @@ export default function CreateTip() {
       return;
     }
 
-    // Validate price as a number
     const price = parseFloat(formData.predictedPrice);
     if (isNaN(price) || price <= 0) {
       alert("Please enter a valid number for the predicted price.");
@@ -133,10 +140,10 @@ export default function CreateTip() {
       alert("User is not authenticated.");
       return;
     }
-
+    console.log(tipData)
     try {
       await axios.post("http://localhost:8080/tips", tipData, {
-        headers: { Authorization: `Bearer ${token}` }, // Corrected
+        headers: { Authorization: `Bearer ${token}` },
       });
       navigate("/home");
     } catch (error) {
@@ -152,7 +159,6 @@ export default function CreateTip() {
         </div>
         <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
           <div className="space-y-6">
-            {/* Stock Name Searchable Dropdown */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Stock Name
@@ -192,59 +198,57 @@ export default function CreateTip() {
 
             {/* Future Date Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Date
-              </label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                onClick={(e) => e.target.showPicker && e.target.showPicker()} // Open calendar on click
-                required
-                min={new Date().toISOString().split("T")[0]}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
+               <label className="block text-sm font-medium text-gray-700">
+                 Date
+               </label>
+               <input
+                 type="date"
+                 name="date"
+                 value={formData.date}
+                 onChange={handleChange}
+                 onClick={(e) => e.target.showPicker && e.target.showPicker()} // Open calendar on click
+                 required
+                 min={new Date().toISOString().split("T")[0]}
+                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               />
+             </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                rows={3}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
+             {/* Description */}
+             <div>
+               <label className="block text-sm font-medium text-gray-700">
+                 Description
+               </label>
+               <textarea
+                 name="description"
+                 value={formData.description}
+                 onChange={handleChange}
+                 required
+                 rows={3}
+                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               />
+             </div>
 
-            {/* Predicted Price */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Predicted Price
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                name="predictedPrice"
-                value={formData.predictedPrice}
-                onChange={handleChange}
-                onInput={(e) => {
-                  if (!/^\d*\.?\d*$/.test(e.target.value)) {
-                    e.target.value = e.target.value.slice(0, -1);
-                  }
-                }}
-                required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="mt-6">
+             {/* Predicted Price */}
+             <div>
+               <label className="block text-sm font-medium text-gray-700">
+                 Predicted Price
+               </label>
+               <input
+                 type="number"
+                 step="0.01"
+                 name="predictedPrice"
+                 value={formData.predictedPrice}
+                 onChange={handleChange}
+                 onInput={(e) => {
+                   if (!/^\d*\.?\d*$/.test(e.target.value)) {
+                     e.target.value = e.target.value.slice(0, -1);
+                   }
+                 }}
+                 required
+                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               />
+             </div>
+             <div className="mt-6">
               <button
                 type="submit"
                 className="w-full py-2 px-4 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
@@ -252,6 +256,17 @@ export default function CreateTip() {
                 Create Tip
               </button>
             </div>
+            {isMonetized && (
+              <div className="mt-4">
+                <button
+                  type="submit"
+                  onClick={() => setFormData((prev) => ({ ...prev, exclusive: true }))}
+                  className="w-full py-2 px-4 text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:ring-2 focus:ring-purple-500"
+                >
+                  Create Exclusive Tips
+                </button>
+              </div>
+            )}
           </div>
         </form>
       </div>

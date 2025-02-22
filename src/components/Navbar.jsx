@@ -3,9 +3,10 @@ import { useState, useEffect } from "react"
 
 const navItems = [
   { name: "Home", href: "/home" },
+  { name: "Exclusive Tip", href: "/exclusive" },
   { name: "Create Tip", href: "/create-tip" },
   { name: "Subscriptions", href: "/subscriptions" },
-  { name: "Memberships", href: "/memberships" }, // New Membership Button
+  { name: "Memberships", href: "/memberships" },
   { name: "Profile", href: "/profile" },
 ]
 
@@ -68,6 +69,7 @@ export default function Navbar() {
 
   // Fetch user details from IDs
   const fetchUserDetails = async (ids, setUsers) => {
+    console.log("Fetching user details for:", ids)
     try {
       const detailsPromises = ids.map(async (id) => {
         const res = await fetch(`http://localhost:8080/users/${id}`)
