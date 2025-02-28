@@ -23,7 +23,7 @@ export default function Home() {
         allTips = [...allTips, ...userTips];
         console.log(allTips);
         let currentUser = localStorage.getItem("userId");
-        allTips = allTips.filter((tip) => tip.user !== currentUser);
+        allTips = allTips.filter((tip) => tip.user.user_id !== currentUser);
         // Sort tips by created_on (newest first)
         allTips.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
 

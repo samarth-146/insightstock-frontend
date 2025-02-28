@@ -21,10 +21,10 @@ export default function Profile() {
         username: data.username,
         email: data.email,
         bio: data.bio || "No bio provided",
-        subscribersCount: data.subscription ? data.subscription.subscribers.length : 0,
+        subscribersCount: data.subscribersCount,
         monetized: data.monetized,
-        membersCount: data.membership ? data.membership.members.length : 0,
-        membershipPrice: data.membership ? data.membership.price : 0,
+        membersCount: data.membersCount,
+        membershipPrice: data.membershipPrice,
       })
     } catch (error) {
       console.error("Error fetching profile:", error)
@@ -55,9 +55,7 @@ export default function Profile() {
     if (profile.subscribersCount>=1000 && updatedProfile.monetized != undefined) {
       requestBody.monetized = updatedProfile.monetized
       if (updatedProfile.monetized) {
-        if (updatedProfile.membershipPrice) requestBody.membership = {
-          price: updatedProfile.membershipPrice
-        }
+        if (updatedProfile.membershipPrice) requestBody.membershipPrice = updatedProfile.membershipPrice
       }
     }
     console.log("Request body:", requestBody)

@@ -3,27 +3,6 @@ import { Link } from "react-router-dom"; // Import Link for navigation
 
 export default function TipsList({ tips , flag=true}) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [usernames, setUsernames] = useState({});
-  console.log(flag)
-  useEffect(() => {
-    const fetchUsernames = async () => {
-      const newUsernames = {};
-      for (const tip of tips) {
-        if (!tip.user) continue;
-        try {
-          const response = await fetch(`http://localhost:8080/users/${tip.user}`);
-          const data = await response.json();
-          newUsernames[tip.user] = data.username;
-        } catch (error) {
-          console.error(`Error fetching user ${tip.user}:`, error);
-          newUsernames[tip.user] = "Unknown User";
-        }
-      }
-      setUsernames(newUsernames);
-    };
-
-    fetchUsernames();
-  }, [tips]);
 
   const filteredTips = tips.filter((tip) =>
     tip.stock_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -52,8 +31,8 @@ export default function TipsList({ tips , flag=true}) {
               {(flag) && 
               <p className="text-sm text-gray-600 mb-2">
                 By: 
-                <Link to={`/profile/${tip.user}`} className="text-blue-600 font-semibold hover:underline">
-                  {usernames[tip.user] || "Loading..."}
+                <Link to={`/profile/${tip.user.user_id}`} className="text-blue-600 font-semibold hover:underline">
+                  {tip.user.username || "Loading..."}
                 </Link>
               </p>
               }

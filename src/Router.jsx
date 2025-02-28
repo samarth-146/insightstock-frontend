@@ -20,7 +20,7 @@ const ProjectRouter=()=>{
         if(userIdStorage && !currentUser){
             setCurrentUser(userIdStorage);
         } 
-        if(!userIdStorage && !["/login","/signup"].includes(window.location.pathname)){
+        if(!userIdStorage && !["/login","/signup","/"].includes(window.location.pathname)){
             navigate('/login');
         }
         if(userIdStorage && window.location.pathname=='/login'){

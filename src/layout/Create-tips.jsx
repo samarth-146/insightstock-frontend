@@ -35,10 +35,12 @@ export default function CreateTip() {
       if (!userId) return;
 
       try {
-        const response = await axios.get(
+        const response = await fetch(
           `http://localhost:8080/users/${userId}`
         );
-        if (response.data && response.data.membership) {
+        let data = await response.json()
+        console.log(data)
+        if (data && data.monetized) {
           setIsMonetized(true);
         } else {
           console.log("User is not monetized");
@@ -131,7 +133,7 @@ export default function CreateTip() {
       predicted_price: price,
       reason: formData.description,
       stock_score: 0,
-      predicted_on: formData.date,
+      prediction_date: formData.date,
       exclusive: formData.exclusive,
     };
 
@@ -142,9 +144,14 @@ export default function CreateTip() {
     }
     console.log(tipData)
     try {
-      await axios.post("http://localhost:8080/tips", tipData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await fetch("http://localhost:8080/tips", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(tipData),
+      });      
       navigate("/home");
     } catch (error) {
       console.error("Error submitting tip:", error);

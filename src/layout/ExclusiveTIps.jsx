@@ -16,10 +16,16 @@ export default function ExclusiveTipsPage() {
           
           let allTips = [];
           let currentUser = localStorage.getItem("userId");
-          const tipsRes = await fetch(
-              `http://localhost:8080/tips/user/exclusive/${currentUser}`
+          const tipsRes = await fetch(`http://localhost:8080/tips/exclusive` , {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+              }
           );
           const userTips = await tipsRes.json();
+          console.log(userTips)
           
           allTips = [...allTips, ...userTips];
           console.log(allTips);

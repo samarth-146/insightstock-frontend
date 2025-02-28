@@ -52,12 +52,14 @@ export default function UserProfile() {
 
   // Check subscription status
   useEffect(() => {
-    if (userProfile && currentUser && userProfile.subscription) {
-      setIsSubscribed(userProfile.subscription.subscribers.includes(currentUser.id))
+    if (userProfile && currentUser && currentUser.subscriptions) {
+      setIsSubscribed(currentUser.subscriptions.some(
+        (subscription) => subscription.user_id === userProfile.id
+      ))
     }
-    if (userProfile && currentUser && userProfile.membership) {
-      setIsMember(userProfile.membership.members.some(
-        (member) => member.user === currentUser.id
+    if (userProfile && currentUser && currentUser.memberships) {
+      setIsMember(currentUser.memberships.some(
+        (membership) => membership.user.user_id === userProfile.id
       ))
     }
   }, [userProfile, currentUser])
@@ -65,18 +67,13 @@ export default function UserProfile() {
   // Handle subscribe action
   const handleSubscribe = async () => {
     try {
-      let requestBody = {
-        subscriberId: currentUser.id,
-        targetUserId: userProfile.id,
-      }
-      console.log("Request Body:", requestBody)
-      await fetch(`http://localhost:8080/subscriptions/subscribe`, {
+      let targetUserId = userProfile.id
+      await fetch(`http://localhost:8080/users/subscribe/${targetUserId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify(requestBody),
+        }
       })
       setIsSubscribed(true)
       window.location.reload()
@@ -138,7 +135,7 @@ export default function UserProfile() {
             </div>
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-gray-500">Followers</dt>
-              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile.subscription ? userProfile.subscription.subscribers.length : 0}</dd>
+              <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile.subscribersCount}</dd>
             </div>
           </dl>
         </div>

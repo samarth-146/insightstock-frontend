@@ -35,20 +35,34 @@ export default function Navbar() {
 
   // Fetch Subscribers List
   const fetchSubscribers = async () => {
-    setLoading(true)
-    setError(null)
-    setSubscribers([])
-    let userId = localStorage.getItem("userId")
+    setLoading(true);
+    setError(null);
+    setSubscribers([]);
+    let userId = localStorage.getItem("userId");
+  
     try {
-      const response = await fetch(`http://localhost:8080/users/${userId}/subscriptions`)
-      if (!response.ok) throw new Error("Failed to fetch subscribers")
-      const ids = await response.json()
-      fetchUserDetails(ids, setSubscribers)
-    } catch (err) {
-      setError(err.message)
-      setLoading(false)
+      const response = await fetch(`http://localhost:8080/users/subscriptions`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      if (!response.ok) throw new Error("Failed to fetch subscribers");
+  
+      const data = await response.json();
+      console.log(data.subscriptions);
+  
+      setSubscribers(data.subscriptions); 
+    } catch (error) {
+      console.error("Error:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+  
 
   // Fetch Membership List
   const fetchMembers = async () => {
@@ -57,31 +71,26 @@ export default function Navbar() {
     setMembers([])
     let userId = localStorage.getItem("userId")
     try {
-      const response = await fetch(`http://localhost:8080/users/${userId}/memberships`)
-      if (!response.ok) throw new Error("Failed to fetch memberships")
-      const ids = await response.json()
-      fetchUserDetails(ids, setMembers)
-    } catch (err) {
-      setError(err.message)
-      setLoading(false)
-    }
-  }
-
-  // Fetch user details from IDs
-  const fetchUserDetails = async (ids, setUsers) => {
-    console.log("Fetching user details for:", ids)
-    try {
-      const detailsPromises = ids.map(async (id) => {
-        const res = await fetch(`http://localhost:8080/users/${id}`)
-        if (!res.ok) throw new Error(`Failed to fetch user ${id}`)
-        return res.json()
-      })
-      const details = await Promise.all(detailsPromises)
-      setUsers(details)
-    } catch (err) {
-      setError("Failed to load user details")
+      const response = await fetch(`http://localhost:8080/users/memberships`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      if (!response.ok) throw new Error("Failed to fetch members");
+  
+      let data = await response.json();
+      data = data.memberships.map((membership) => membership.user);
+      console.log(data);
+  
+      setMembers(data); 
+    } catch (error) {
+      console.error("Error:", error);
+      setError(error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -172,9 +181,9 @@ function Popup({ title, users, loading, error, onClose, onUserClick }) {
           <ul className="space-y-2">
             {users.length > 0 ? (
               users.map((user) => (
-                <li key={user.id}>
+                <li key={user.user_id}>
                   <button
-                    onClick={() => onUserClick(user.id)}
+                    onClick={() => onUserClick(user.user_id)}
                     className="w-full text-left px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 rounded transition duration-200"
                   >
                     {user.username}
