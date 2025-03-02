@@ -114,49 +114,79 @@ export default function CreateTip() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const selectedDate = new Date(formData.date);
     const today = new Date();
     if (selectedDate < today.setHours(0, 0, 0, 0)) {
       alert("Please select a future date.");
       return;
     }
-
+  
     const price = parseFloat(formData.predictedPrice);
     if (isNaN(price) || price <= 0) {
       alert("Please enter a valid number for the predicted price.");
       return;
     }
-
+  
+    let stockname = {
+      stock_name: formData.stockName,
+    };
+  
+    console.log("Sending stock name:", stockname);
+  
+    let model_price;
+    try {
+      let response = await fetch("http://localhost:8080/proxy/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stockname),
+      });
+      let ml_response = await response.json();
+      model_price = parseFloat(ml_response.predicted_price).toFixed(2);
+    } catch (error) {
+      console.error("Error fetching prediction:", error);
+      return;
+    }
+  
     const tipData = {
       stock_name: formData.stockName,
       predicted_price: price,
       reason: formData.description,
-      stock_score: 0,
+      stock_score: model_price,
       prediction_date: formData.date,
       exclusive: formData.exclusive,
     };
-
+  
     const token = localStorage.getItem("token");
     if (!token) {
       alert("User is not authenticated.");
       return;
     }
-    console.log(tipData)
+  
+    console.log("Submitting tip data:", tipData);
+  
     try {
-      await fetch("http://localhost:8080/tips", {
+      const response = await fetch("http://localhost:8080/tips", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(tipData),
-      });      
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to submit tip.");
+      }
+  
       navigate("/home");
     } catch (error) {
       console.error("Error submitting tip:", error);
     }
   };
+  
 
   return (
     <div className="container mx-auto p-4">

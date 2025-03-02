@@ -41,7 +41,7 @@ export default function TipsList({ tips , flag=true}) {
                   Predicted: ₹{tip.predicted_price.toFixed(2)}
                 </p>
                 <p className={`font-semibold ${tip.exclusive ? "text-red-600" : "text-green-600"}`}>
-                  {tip.exclusive ? "Exclusive" : "Public"}
+                  {tip.stock_score ? "Model Price: "+ tip.stock_score : tip.exclusive ? "Exclusive" : "Public"}
                 </p>
               </div>
             </div>
