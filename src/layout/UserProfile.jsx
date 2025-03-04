@@ -18,7 +18,7 @@ export default function UserProfile() {
         const response = await fetch(`http://localhost:8080/users/${userId1}`)
         const data = await response.json()
         setCurrentUser(data)
-        console.log("Current User:", data)
+        console.log("Current user:", data)
       } catch (error) {
         console.error("Error fetching current user:", error)
       }
@@ -28,7 +28,6 @@ export default function UserProfile() {
       try {
         const response = await fetch(`http://localhost:8080/users/${userId}`)
         const data = await response.json()
-        console.log("User Profile:", data)
         setUserProfile(data)
       } catch (error) {
         console.error("Error fetching user profile:", error)
@@ -37,7 +36,16 @@ export default function UserProfile() {
 
     const fetchUserTips = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/tips/user/${userId}`)
+        const response = await fetch(
+          `http://localhost:8080/users/${userId}/tips`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await response.json()
         setUserTips(data)
       } catch (error) {
@@ -45,8 +53,25 @@ export default function UserProfile() {
       }
     }
 
+    const fetchSubscriptions = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/users/subscriptions", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await response.json();
+        setIsSubscribed(data.subscriptions.some((sub) => sub.user_id === userId));
+      } catch (error) {
+        console.error("Error fetching subscriptions:", error);
+      }
+    }
+
     fetchCurrentUser()
     fetchUserProfile()
+    fetchSubscriptions()
     fetchUserTips()
   }, [userId])
 
@@ -67,21 +92,33 @@ export default function UserProfile() {
   // Handle subscribe action
   const handleSubscribe = async () => {
     try {
-      let targetUserId = userProfile.id
-      await fetch(`http://localhost:8080/users/subscribe/${targetUserId}`, {
+      await fetch(`http://localhost:8080/users/subscribe/${userProfile.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        }
-      })
-      setIsSubscribed(true)
-      window.location.reload()
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setIsSubscribed(true);
     } catch (error) {
-      console.error("Error subscribing:", error)
-      window.location.reload()
+      console.error("Error subscribing:", error);
     }
-  }
+  };
+
+  const handleUnsubscribe = async () => {
+    try {
+      await fetch(`http://localhost:8080/users/unsubscribe/${userProfile.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setIsSubscribed(false);
+    } catch (error) {
+      console.error("Error unsubscribing:", error);
+    }
+  };
 
   // Handle join membership action
   const handleJoin = async () => {
@@ -134,7 +171,7 @@ export default function UserProfile() {
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile.email}</dd>
             </div>
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-medium text-gray-500">Followers</dt>
+              <dt className="text-sm font-medium text-gray-500">Subscribers</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userProfile.subscribersCount}</dd>
             </div>
           </dl>
@@ -142,7 +179,14 @@ export default function UserProfile() {
       </div>
 
       {/* Subscribe Button */}
-      {!isSubscribed && (
+      {isSubscribed ? (
+        <button
+          onClick={handleUnsubscribe}
+          className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600"
+        >
+          Unsubscribe
+        </button>
+      ) : (
         <button
           onClick={handleSubscribe}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600"
