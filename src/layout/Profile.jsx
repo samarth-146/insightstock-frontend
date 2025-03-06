@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TipsList from "../components/TipsList";
 import EditProfile from "../layout/EditProfile";
+import { toast } from "react-toastify";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -47,9 +48,31 @@ export default function Profile() {
       const data = await response.json();
       console.log("Fetched tips:", data);
       // console.log("Fetched tips:", data);
-      setUserTips(data || []);
+      setUserTips(data.filter(tip => tip !== null)); // Remove null values
     } catch (error) {
       console.error("Error fetching user tips:", error);
+    }
+  };
+
+  const handleDelete = async (tipId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/tips/${tipId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Tip Deleted Successfully");
+        window.location.reload();
+
+      } else {
+        console.error("Failed to delete tip");
+      }
+    } catch (error) {
+      console.error("Error deleting tip:", error);
     }
   };
 
@@ -192,7 +215,7 @@ export default function Profile() {
           <h2 className="text-xl font-bold text-gray-900">My Tips</h2>
         </div>
         <div className="border-t border-gray-200">
-          <TipsList tips={userTips} flag={false} />
+          <TipsList tips={userTips} flag={false} onDelete={handleDelete} />
         </div>
       </div>
     </div>

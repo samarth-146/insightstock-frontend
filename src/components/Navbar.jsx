@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
+import { toast } from "react-toastify"
 
 const navItems = [
   { name: "Home", href: "/home" },
@@ -22,6 +23,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     localStorage.removeItem("userId")
     localStorage.removeItem("token")
+    toast.success('Logged out successfully');
     navigate("/login")
   }
 

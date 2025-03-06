@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-export default function TipsList({ tips , flag=true}) {
+export default function TipsList({ tips, flag = true, onDelete }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const currentUserId = localStorage.getItem("userId");
 
-  const filteredTips = tips.filter((tip) =>
-    tip.stock_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
+  const filteredTips = tips.filter(tip => tip && tip.stock_name);
+
+
+
 
   return (
     <div className="h-full flex flex-col p-4">
@@ -28,22 +31,41 @@ export default function TipsList({ tips , flag=true}) {
             </div>
             <div className="px-4 py-3">
               <p className="text-gray-700 mb-2">{tip.reason}</p>
-              {(flag) && 
-              <p className="text-sm text-gray-600 mb-2">
-                By: 
-                <Link to={`/profile/${tip.user.user_id}`} className="text-blue-600 font-semibold hover:underline">
-                  {tip.user.username || "Loading..."}
-                </Link>
-              </p>
-              }
-              <div className="flex justify-between">
+              {flag && (
+                <p className="text-sm text-gray-600 mb-2">
+                  By:
+                  <Link to={`/profile/${tip.user.user_id}`} className="text-blue-600 font-semibold hover:underline">
+                    {tip.user.username || "Loading..."}
+                  </Link>
+                </p>
+              )}
+              <div className="flex justify-between items-center">
                 <p className="text-blue-600 font-semibold">
                   Predicted: ₹{tip.predicted_price.toFixed(2)}
                 </p>
                 <p className={`font-semibold ${tip.exclusive ? "text-red-600" : "text-green-600"}`}>
-                  {tip.stock_score ? "Model Price: "+ tip.stock_score : tip.exclusive ? "Exclusive" : "Public"}
+                  {tip.stock_score ? "Model Price: " + tip.stock_score : tip.exclusive ? "Exclusive" : "Public"}
                 </p>
               </div>
+              {onDelete && (
+                <button
+                  className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+                  onClick={() => {
+                    onDelete(tip.id);
+                  }}
+                >
+                  Delete
+                </button>
+              )}
+
+              {/* {flag && tip.user.user_id === currentUserId && (
+                <button
+                  onClick={() => onDelete(tip.id)}
+                  className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              )} */}
             </div>
           </div>
         ))}

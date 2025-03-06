@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function CreateTip() {
   const navigate = useNavigate();
@@ -19,6 +20,14 @@ export default function CreateTip() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
+  const isMarketOpen = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    return (hours < 8 || (hours === 8 && minutes < 45)) || (hours >= 17);
+
+  }
   useEffect(() => {
     async function fetchStocks() {
       try {
@@ -114,26 +123,37 @@ export default function CreateTip() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const selectedDate = new Date(formData.date);
     const today = new Date();
     if (selectedDate < today.setHours(0, 0, 0, 0)) {
       alert("Please select a future date.");
       return;
     }
-  
+
+    if (!isMarketOpen()) {
+      toast.error("You cannot create a tip between 8:45 am to 5:00 pm");
+      setFormData({
+        stockName: "",
+        date: "",
+        description: "",
+        predictedPrice: "",
+        exclusive: false,
+      });
+      return;
+    }
     const price = parseFloat(formData.predictedPrice);
     if (isNaN(price) || price <= 0) {
       alert("Please enter a valid number for the predicted price.");
       return;
     }
-  
+
     let stockname = {
       stock_name: formData.stockName,
     };
-  
+
     console.log("Sending stock name:", stockname);
-  
+
     let model_price;
     try {
       let response = await fetch("http://localhost:8080/proxy/predict", {
@@ -149,7 +169,7 @@ export default function CreateTip() {
       console.error("Error fetching prediction:", error);
       return;
     }
-  
+
     const tipData = {
       stock_name: formData.stockName,
       predicted_price: price,
@@ -158,15 +178,15 @@ export default function CreateTip() {
       prediction_date: formData.date,
       exclusive: formData.exclusive,
     };
-  
+
     const token = localStorage.getItem("token");
     if (!token) {
       alert("User is not authenticated.");
       return;
     }
-  
+
     console.log("Submitting tip data:", tipData);
-  
+
     try {
       const response = await fetch("http://localhost:8080/tips", {
         method: "POST",
@@ -176,17 +196,17 @@ export default function CreateTip() {
         },
         body: JSON.stringify(tipData),
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to submit tip.");
       }
-  
+
       navigate("/home");
     } catch (error) {
       console.error("Error submitting tip:", error);
     }
   };
-  
+
 
   return (
     <div className="container mx-auto p-4">
@@ -215,11 +235,10 @@ export default function CreateTip() {
                     <li
                       key={stock.id}
                       onClick={() => handleStockSelect(stock.stockName)}
-                      className={`px-3 py-2 cursor-pointer ${
-                        highlightedIndex === index
+                      className={`px-3 py-2 cursor-pointer ${highlightedIndex === index
                           ? "bg-blue-100"
                           : "hover:bg-gray-100"
-                      }`}
+                        }`}
                     >
                       {stock.stockName}
                     </li>
@@ -235,57 +254,57 @@ export default function CreateTip() {
 
             {/* Future Date Selection */}
             <div>
-               <label className="block text-sm font-medium text-gray-700">
-                 Date
-               </label>
-               <input
-                 type="date"
-                 name="date"
-                 value={formData.date}
-                 onChange={handleChange}
-                 onClick={(e) => e.target.showPicker && e.target.showPicker()} // Open calendar on click
-                 required
-                 min={new Date().toISOString().split("T")[0]}
-                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               />
-             </div>
+              <label className="block text-sm font-medium text-gray-700">
+                Date
+              </label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                onClick={(e) => e.target.showPicker && e.target.showPicker()} // Open calendar on click
+                required
+                min={new Date().toISOString().split("T")[0]}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
 
-             {/* Description */}
-             <div>
-               <label className="block text-sm font-medium text-gray-700">
-                 Description
-               </label>
-               <textarea
-                 name="description"
-                 value={formData.description}
-                 onChange={handleChange}
-                 required
-                 rows={3}
-                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               />
-             </div>
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+                rows={3}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
 
-             {/* Predicted Price */}
-             <div>
-               <label className="block text-sm font-medium text-gray-700">
-                 Predicted Price
-               </label>
-               <input
-                 type="number"
-                 step="0.01"
-                 name="predictedPrice"
-                 value={formData.predictedPrice}
-                 onChange={handleChange}
-                 onInput={(e) => {
-                   if (!/^\d*\.?\d*$/.test(e.target.value)) {
-                     e.target.value = e.target.value.slice(0, -1);
-                   }
-                 }}
-                 required
-                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               />
-             </div>
-             <div className="mt-6">
+            {/* Predicted Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Predicted Price
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                name="predictedPrice"
+                value={formData.predictedPrice}
+                onChange={handleChange}
+                onInput={(e) => {
+                  if (!/^\d*\.?\d*$/.test(e.target.value)) {
+                    e.target.value = e.target.value.slice(0, -1);
+                  }
+                }}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+            <div className="mt-6">
               <button
                 type="submit"
                 className="w-full py-2 px-4 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
