@@ -10,7 +10,8 @@ import CreateTip from './layout/Create-tips';
 import Profile from './layout/Profile';
 import UserProfile from './layout/UserProfile';
 import ExclusiveTipsPage from './layout/ExclusiveTIps';
-
+import Success from './layout/Success';
+import Cancel from './layout/Cancel';
 
 const ProjectRouter=()=>{
     const navigate=useNavigate();
@@ -50,6 +51,8 @@ const ProjectRouter=()=>{
                 { path: "/user/:username", element: <UserProfile/> },
                 {path:"/profile/:userId",element:<UserProfile/>},
                 {path: "/exclusive", element: <ExclusiveTipsPage />},
+                { path: "/payment/success", element: <Success /> },
+                { path: "/payment/cancel", element: <Cancel /> },
             ],
 
         },
