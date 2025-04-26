@@ -7,7 +7,9 @@ function Header({ isSignIn }) {
         <div className="text-2xl font-bold text-blue-600">InsightStocks</div>
         <nav>
           {isSignIn ? ( // Conditional rendering
-            null
+            <a href="/signup" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              Sign Up
+            </a>
           ) : <ul>
           <li>
             <a href="/login" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">

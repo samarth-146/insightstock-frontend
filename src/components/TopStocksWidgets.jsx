@@ -2,7 +2,7 @@ export default function TopStocksWidget({ stocks }) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="px-4 py-3 bg-gray-50">
-        <h2 className="text-xl font-semibold">Top 10 Stocks</h2>
+        <h2 className="text-xl font-semibold">Previous Day Closing Price</h2>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full">

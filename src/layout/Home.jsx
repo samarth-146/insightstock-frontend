@@ -38,43 +38,26 @@ export default function Home() {
 
   useEffect(() => {
     const fetchTopStocks = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setTopStocks([
-        {
-          symbol: "RELIANCE",
-          name: "Reliance Industries",
-          lastClosedPrice: 2500.75,
-        },
-        {
-          symbol: "TCS",
-          name: "Tata Consultancy Services",
-          lastClosedPrice: 3200.5,
-        },
-        { symbol: "HDFCBANK", name: "HDFC Bank", lastClosedPrice: 1450.25 },
-        { symbol: "INFY", name: "Infosys", lastClosedPrice: 1300.0 },
-        {
-          symbol: "HINDUNILVR",
-          name: "Hindustan Unilever",
-          lastClosedPrice: 2600.75,
-        },
-        { symbol: "ICICIBANK", name: "ICICI Bank", lastClosedPrice: 750.5 },
-        {
-          symbol: "SBIN",
-          name: "State Bank of India",
-          lastClosedPrice: 450.25,
-        },
-        { symbol: "BHARTIARTL", name: "Bharti Airtel", lastClosedPrice: 600.0 },
-        { symbol: "ITC", name: "ITC", lastClosedPrice: 275.5 },
-        {
-          symbol: "KOTAKBANK",
-          name: "Kotak Mahindra Bank",
-          lastClosedPrice: 1800.25,
-        },
-      ]);
+      try {
+        const res = await fetch("/api/stocks");
+        const data = await res.json();
+        console.log(data);
+  
+        const formatted = data.map((stock) => ({
+          symbol: stock.stockName,
+          name: stock.stockName, // you can customize this if full name is separate
+          lastClosedPrice: stock.previousClosingPrice,
+        }));
+  
+        setTopStocks(formatted);
+      } catch (error) {
+        console.error("Error fetching stock data:", error);
+      }
     };
-
+  
     fetchTopStocks();
   }, []);
+  
 
   return (
     <div className="flex h-screen overflow-hidden">
