@@ -25,7 +25,7 @@ export default function Home() {
         let currentUser = localStorage.getItem("userId");
         allTips = allTips.filter((tip) => tip.user.user_id !== currentUser);
         // Sort tips by created_on (newest first)
-        allTips.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
+        allTips.sort((a, b) => new Date(a.prediction_date) - new Date(b.prediction_date));
 
         setTips(allTips);
       } catch (error) {

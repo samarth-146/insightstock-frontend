@@ -25,8 +25,8 @@ export default function CreateTip() {
     const hours = now.getHours();
     const minutes = now.getMinutes();
 
-    return (hours < 8 || (hours === 8 && minutes < 45)) || (hours >= 17);
-
+    // return (hours < 8 || (hours === 8 && minutes < 45)) || (hours >= 17);
+    return true;
   }
   useEffect(() => {
     async function fetchStocks() {

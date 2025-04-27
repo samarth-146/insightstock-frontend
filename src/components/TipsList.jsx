@@ -6,10 +6,9 @@ export default function TipsList({ tips, flag = true, onDelete }) {
   const currentUserId = localStorage.getItem("userId");
 
   
-  const filteredTips = tips.filter(tip => tip && tip.stock_name);
-
-
-
+  const filteredTips = tips.filter((tip) =>
+    tip.stock_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="h-full flex flex-col p-4">
@@ -26,7 +25,7 @@ export default function TipsList({ tips, flag = true, onDelete }) {
             <div className="px-4 py-3 bg-gray-50 flex justify-between items-center">
               <h3 className="text-lg font-semibold">{tip.stock_name}</h3>
               <span className="text-sm text-gray-500">
-                {new Date(tip.created_on).toLocaleDateString()}
+                {new Date(tip.prediction_date).toLocaleDateString()}
               </span>
             </div>
             <div className="px-4 py-3">

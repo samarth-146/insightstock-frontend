@@ -201,7 +201,7 @@ export default function Profile() {
                     Membership Price
                   </dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    ${profile.membershipPrice.toFixed(2)} / month
+                    Rs {profile.membershipPrice.toFixed(2)} / month
                   </dd>
                 </div>
               )}
