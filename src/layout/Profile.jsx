@@ -16,7 +16,7 @@ export default function Profile() {
   const fetchProfile = async () => {
     try {
       const userId = localStorage.getItem("userId");
-      const response = await fetch(`http://localhost:8080/users/${userId}`); // replace {userId} with the actual user ID
+      const response = await fetch(`https://insightstock-latest.onrender.com/users/${userId}`); // replace {userId} with the actual user ID
       const data = await response.json();
       setProfile({
         username: data.username,
@@ -36,7 +36,7 @@ export default function Profile() {
     try {
       let userId = localStorage.getItem("userId");
       const response = await fetch(
-        `http://localhost:8080/users/${userId}/tips`,
+        `https://insightstock-latest.onrender.com/users/${userId}/tips`,
         {
           method: "GET",
           headers: {
@@ -56,7 +56,7 @@ export default function Profile() {
 
   const handleDelete = async (tipId) => {
     try {
-      const response = await fetch(`http://localhost:8080/tips/${tipId}`, {
+      const response = await fetch(`https://insightstock-latest.onrender.com/tips/${tipId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export default function Profile() {
       }
     }
     console.log("Request body:", requestBody);
-    fetch(`http://localhost:8080/users/${userId}`, {
+    fetch(`https://insightstock-latest.onrender.com/users/${userId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

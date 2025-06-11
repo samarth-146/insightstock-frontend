@@ -17,7 +17,7 @@ export default function UserProfile() {
     const fetchCurrentUser = async () => {
       try {
         let userId1 = localStorage.getItem("userId");
-        const response = await fetch(`http://localhost:8080/users/${userId1}`);
+        const response = await fetch(`https://insightstock-latest.onrender.com/users/${userId1}`);
         const data = await response.json();
         setCurrentUser(data);
         console.log("Current user:", data);
@@ -28,7 +28,7 @@ export default function UserProfile() {
 
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/${userId}`);
+        const response = await fetch(`https://insightstock-latest.onrender.com/users/${userId}`);
         const data = await response.json();
         setUserProfile(data);
       } catch (error) {
@@ -39,7 +39,7 @@ export default function UserProfile() {
     const fetchUserTips = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/users/${userId}/tips`,
+          `https://insightstock-latest.onrender.com/users/${userId}/tips`,
           {
             method: "GET",
             headers: {
@@ -58,7 +58,7 @@ export default function UserProfile() {
     const fetchSubscriptions = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/users/subscriptions",
+          "https://insightstock-latest.onrender.com/users/subscriptions",
           {
             method: "GET",
             headers: {
@@ -103,7 +103,7 @@ export default function UserProfile() {
   // Handle subscribe action
   const handleSubscribe = async () => {
     try {
-      await fetch(`http://localhost:8080/users/subscribe/${userProfile.id}`, {
+      await fetch(`https://insightstock-latest.onrender.com/users/subscribe/${userProfile.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export default function UserProfile() {
 
   const handleUnsubscribe = async () => {
     try {
-      await fetch(`http://localhost:8080/users/unsubscribe/${userProfile.id}`, {
+      await fetch(`https://insightstock-latest.onrender.com/users/unsubscribe/${userProfile.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +137,7 @@ export default function UserProfile() {
 
   async function handlePayment(targetUserId) {
     try {
-      const response = await fetch(`http://localhost:8080/membership/create-checkout-session/${userId}`, {
+      const response = await fetch(`https://insightstock-latest.onrender.com/membership/create-checkout-session/${userId}`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -162,7 +162,7 @@ export default function UserProfile() {
   const handleJoin = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/membership/register/${userProfile.id}`,
+        `https://insightstock-latest.onrender.com/membership/register/${userProfile.id}`,
         {
           method: "POST",
           headers: {

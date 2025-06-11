@@ -39,7 +39,7 @@ const Signup = () => {
       setConfirmPassword("");
       setAgreeTerms(false)
       setShowPassword(false);
-      const response=await axios.post('http://localhost:8080/users/register',data);
+      const response=await axios.post('https://insightstock-latest.onrender.com/users/register',data);
       const token=response.data.token;
       const userId=response.data.userId;
       localStorage.setItem('token',token);

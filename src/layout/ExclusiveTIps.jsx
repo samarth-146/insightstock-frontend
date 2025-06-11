@@ -16,7 +16,7 @@ export default function ExclusiveTipsPage() {
           
           let allTips = [];
           let currentUser = localStorage.getItem("userId");
-          const tipsRes = await fetch(`http://localhost:8080/tips/exclusive` , {
+          const tipsRes = await fetch(`https://insightstock-latest.onrender.com/tips/exclusive` , {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

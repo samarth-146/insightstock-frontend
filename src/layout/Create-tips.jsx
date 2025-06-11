@@ -31,7 +31,7 @@ export default function CreateTip() {
   useEffect(() => {
     async function fetchStocks() {
       try {
-        const response = await axios.get("http://localhost:8080/stocks");
+        const response = await axios.get("https://insightstock-latest.onrender.com/stocks");
         setStockList(response.data);
         setFilteredStocks(response.data);
       } catch (error) {
@@ -45,7 +45,7 @@ export default function CreateTip() {
 
       try {
         const response = await fetch(
-          `http://localhost:8080/users/${userId}`
+          `https://insightstock-latest.onrender.com/users/${userId}`
         );
         let data = await response.json()
         console.log(data)
@@ -156,7 +156,7 @@ export default function CreateTip() {
 
     let model_price;
     try {
-      let response = await fetch("http://localhost:8080/proxy/predict", {
+      let response = await fetch("https://insightstock-latest.onrender.com/proxy/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +188,7 @@ export default function CreateTip() {
     console.log("Submitting tip data:", tipData);
 
     try {
-      const response = await fetch("http://localhost:8080/tips", {
+      const response = await fetch("https://insightstock-latest.onrender.com/tips", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

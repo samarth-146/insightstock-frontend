@@ -16,7 +16,7 @@ export default function Home() {
         
         let allTips = [];
         const tipsRes = await fetch(
-            `http://localhost:8080/tips`
+            `https://insightstock-latest.onrender.com/tips`
         );
         const userTips = await tipsRes.json();
         

@@ -19,7 +19,7 @@ export default function Success() {
     const handleJoinMembership = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/membership/register/${targetUserId}`,
+          `https://insightstock-latest.onrender.com/membership/register/${targetUserId}`,
           {
             method: "POST",
             headers: {

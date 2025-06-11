@@ -43,7 +43,7 @@ export default function Navbar() {
     let userId = localStorage.getItem("userId");
   
     try {
-      const response = await fetch(`http://localhost:8080/users/subscriptions`, {
+      const response = await fetch(`https://insightstock-latest.onrender.com/users/subscriptions`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export default function Navbar() {
     setMembers([])
     let userId = localStorage.getItem("userId")
     try {
-      const response = await fetch(`http://localhost:8080/users/memberships`, {
+      const response = await fetch(`https://insightstock-latest.onrender.com/users/memberships`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

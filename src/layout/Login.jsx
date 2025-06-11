@@ -18,7 +18,7 @@ const Login = () => {
         email: email,
         password: password,
       };
-      const response = await axios.post('http://localhost:8080/users/login', data);
+      const response = await axios.post('https://insightstock-latest.onrender.com/users/login', data);
       const token = response.data.token;
       const userId = response.data.userId;
       localStorage.setItem("token", token);
